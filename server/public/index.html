@@ -122,6 +122,7 @@
                 <h1 class="nav-logo">💰 BudgetBuddy+</h1>
                 <div class="nav-menu">
                     <button onclick="showScreen('dashboard')" class="nav-link active">Dashboard</button>
+                    <button onclick="showScreen('accounts')" class="nav-link">Accounts</button>
                     <button onclick="showScreen('transactions')" class="nav-link">Transactions</button>
                     <button onclick="showScreen('profile')" class="nav-link">Profile</button>
                     <button onclick="logout()" class="nav-link">Logout</button>
@@ -135,20 +136,8 @@
                 <h2>Dashboard</h2>
                 <p class="welcome-message">Welcome back, <span id="current-username"></span>!</p>
                 
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <h3>Total Accounts</h3>
-                        <p id="total-accounts">-</p>
-                    </div>
-                    <div class="stat-card">
-                        <h3>Total Transactions</h3>
-                        <p id="total-transactions">-</p>
-                    </div>
-                    <div class="stat-card">
-                        <h3>Account Balance</h3>
-                        <p id="total-balance">-</p>
-                    </div>
-                </div>
+                <!-- React-enhanced Stats Grid -->
+                <div id="react-stats-container"></div>
 
                 <!-- Goals Section -->
                 <div class="card" style="margin-top: 2rem;">
@@ -203,10 +192,6 @@
                     </form>
                 </div>
 
-                <div class="action-buttons">
-                    <button onclick="showScreen('transactions')" class="btn btn-primary btn-large">View All Transactions</button>
-                    <button onclick="showAddTransaction()" class="btn btn-secondary btn-large">+ Add Transaction</button>
-                </div>
             </div>
         </div>
 
@@ -269,6 +254,19 @@
                         <button onclick="loadTransactions()" class="btn btn-secondary btn-small">Refresh</button>
                     </div>
                     <div id="transactions-list" class="data-list"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Accounts Screen -->
+        <div id="accounts-screen" class="app-section">
+            <div class="container">
+                <h2>My Accounts</h2>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Bank Accounts</h3>
+                    </div>
+                    <div id="accounts-list" class="data-list"></div>
                 </div>
             </div>
         </div>

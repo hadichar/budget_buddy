@@ -135,8 +135,13 @@ function showScreen(screenName) {
     $(screenName + '-screen').classList.add('active');
     document.querySelector(`[onclick="showScreen('${screenName}')"]`)?.classList.add('active');
     
-    const loaders = { dashboard: loadDashboard, transactions: loadTransactions, profile: loadProfile };
+    const loaders = { dashboard: loadDashboard, accounts: loadAccounts, transactions: loadTransactions, profile: loadProfile };
     loaders[screenName]?.();
+    
+    // Load React-enhanced stats when dashboard is shown
+    if (screenName === 'dashboard' && !window.reactLoaded) {
+        loadReactDashboard();
+    }
 }
 
 // ==================== DASHBOARD ====================
@@ -415,6 +420,53 @@ async function deleteTransaction(transactionId) {
     }
 }
 
+// ==================== ACCOUNTS ====================
+async function loadAccounts() {
+    if (!currentUser) return;
+    try {
+        const { data: allAccounts } = await apiCall('/accounts');
+        const userAccounts = filterUserData(allAccounts, currentUser.user_id);
+        const container = $('accounts-list');
+        
+        if (userAccounts.length === 0) {
+            container.innerHTML = '<p class="loading">No accounts found. Add your first account in the setup!</p>';
+            return;
+        }
+        
+        // Calculate total balance
+        const totalBalance = userAccounts.reduce((sum, acc) => sum + parseFloat(acc.balance || 0), 0);
+        
+        container.innerHTML = `
+            <div style="margin-bottom: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 5px;">
+                <strong style="font-size: 1.2rem; color: #667eea;">Total Balance: $${totalBalance.toFixed(2)}</strong>
+            </div>
+            ${userAccounts.map(account => {
+                const balance = parseFloat(account.balance || 0);
+                const balanceColor = balance >= 0 ? '#28a745' : '#dc3545';
+                return `
+                    <div class="data-item">
+                        <div class="data-item-info">
+                            <strong style="font-size: 1.1rem; color: #667eea;">${account.account_name}</strong>
+                            <div style="margin-top: 0.5rem;">
+                                <span style="color: #666;">${account.bank_name}</span> • 
+                                <span style="color: #666; text-transform: capitalize;">${account.account_type}</span>
+                            </div>
+                            <div style="margin-top: 0.5rem;">
+                                <strong style="font-size: 1.3rem; color: ${balanceColor};">
+                                    $${balance.toFixed(2)}
+                                </strong>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('')}
+        `;
+    } catch (error) {
+        console.error('Error loading accounts:', error);
+        $('accounts-list').innerHTML = '<p style="color: #dc3545;">Error loading accounts. Please try again.</p>';
+    }
+}
+
 // ==================== PROFILE ====================
 async function loadProfile() {
     if (!currentUser) return;
@@ -553,3 +605,47 @@ function closeModal() {
 window.onclick = event => {
     if (event.target === $('edit-modal')) closeModal();
 };
+
+// ==================== REACT DASHBOARD ====================
+let reactLoaded = false;
+
+function loadReactDashboard() {
+    if (reactLoaded) return;
+    reactLoaded = true;
+    window.reactLoaded = true;
+    
+    // Load React CSS
+    if (!document.getElementById('react-css')) {
+        const link = document.createElement('link');
+        link.id = 'react-css';
+        link.rel = 'stylesheet';
+        link.href = '/assets/index-D--hiODx.css';
+        document.head.appendChild(link);
+    }
+    
+    // Load React JS - find the latest built file
+    if (!document.getElementById('react-js')) {
+        const script = document.createElement('script');
+        script.id = 'react-js';
+        script.type = 'module';
+        // Try the newest filename first, then fallback to others
+        script.src = '/assets/index-mlUPaw76.js';
+        script.onerror = function() {
+            // Fallback to older filenames if new one doesn't exist
+            this.src = '/assets/index-CmifcRG_.js';
+            this.onerror = function() {
+                this.src = '/assets/index-DWfj8lbj.js';
+                this.onerror = function() {
+                    this.src = '/assets/index-C-01Ut89.js';
+                    this.onerror = function() {
+                        this.src = '/assets/index-DWHjUpE8.js';
+                        this.onerror = function() {
+                            this.src = '/assets/index-D4IOOOd1.js';
+                        };
+                    };
+                };
+            };
+        };
+        document.body.appendChild(script);
+    }
+}
