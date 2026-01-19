@@ -32,3 +32,4 @@ client/node_modules/
 
 # Server node_modules (keep package.json)
 server/node_modules/
+documentation/demo.mp4
