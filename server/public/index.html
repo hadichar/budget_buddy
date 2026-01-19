@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BudgetBuddy+ - Personal Finance Tracker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Login/Signup Screen -->
+    <div id="login-screen" class="screen active">
+        <div class="login-container">
+            <div class="login-card">
+                <h1>💰 BudgetBuddy+</h1>
+                <p class="subtitle">Your Personal Finance Tracker</p>
+                
+                <!-- Login Form -->
+                <div id="login-form-view" class="auth-form">
+                    <h2>Welcome Back!</h2>
+                    <form onsubmit="handleLogin(event)">
+                        <div class="form-group">
+                            <label>Username:</label>
+                            <input type="text" id="login-username" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Password:</label>
+                            <input type="password" id="login-password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-large">Sign In</button>
+                    </form>
+                    <p class="auth-switch">
+                        Don't have an account? 
+                        <a href="#" onclick="showSignup()">Sign up</a>
+                    </p>
+                </div>
+
+                <!-- Signup Form -->
+                <div id="signup-form-view" class="auth-form" style="display: none;">
+                    <h2>Create Your Account</h2>
+                    <form onsubmit="handleSignup(event)">
+                        <div class="form-group">
+                            <label>Username:</label>
+                            <input type="text" id="signup-username" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email:</label>
+                            <input type="email" id="signup-email" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Password:</label>
+                            <input type="password" id="signup-password" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Date:</label>
+                            <input type="date" id="signup-date" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-large">Create Account</button>
+                    </form>
+                    <p class="auth-switch">
+                        Already have an account? 
+                        <a href="#" onclick="showLogin()">Log in</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Setup Wizard Screen -->
+    <div id="setup-screen" class="screen">
+        <div class="container">
+            <div class="setup-card">
+                <h2>Welcome to BudgetBuddy+!</h2>
+                <p class="setup-intro">Let's set up your account. This will only take a minute.</p>
+                
+                <div class="setup-steps">
+                    <div class="step active" id="step-1">
+                        <h3>Step 1: Add Your Bank Account</h3>
+                        <form onsubmit="addBankAccount(event)">
+                            <div class="form-group">
+                                <label>Account Name:</label>
+                                <input type="text" id="account-name" placeholder="e.g., Chase Checking" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Account Type:</label>
+                                <select id="account-type" required>
+                                    <option value="checking">Checking</option>
+                                    <option value="savings">Savings</option>
+                                    <option value="credit">Credit Card</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Bank Name:</label>
+                                <input type="text" id="bank-name" placeholder="e.g., Chase Bank" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Starting Balance:</label>
+                                <input type="number" step="0.01" id="account-balance" value="0.00" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Add Account</button>
+                        </form>
+                        <button onclick="skipStep(1)" class="btn btn-secondary">Skip for now</button>
+                    </div>
+                </div>
+                
+                <div class="setup-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill"></div>
+                    </div>
+                    <p>Step <span id="current-step">1</span> of 1</p>
+                </div>
+                
+                <button onclick="finishSetup()" class="btn btn-primary btn-large" id="finish-btn" style="display: none;">Finish Setup & Go to Dashboard</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App (Dashboard, Transactions, etc.) -->
+    <div id="app-screen" class="screen">
+        <!-- Navigation Bar -->
+        <nav class="navbar">
+            <div class="nav-container">
+                <h1 class="nav-logo">💰 BudgetBuddy+</h1>
+                <div class="nav-menu">
+                    <button onclick="showScreen('dashboard')" class="nav-link active">Dashboard</button>
+                    <button onclick="showScreen('transactions')" class="nav-link">Transactions</button>
+                    <button onclick="showScreen('profile')" class="nav-link">Profile</button>
+                    <button onclick="logout()" class="nav-link">Logout</button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Dashboard Screen -->
+        <div id="dashboard-screen" class="app-section active">
+            <div class="container">
+                <h2>Dashboard</h2>
+                <p class="welcome-message">Welcome back, <span id="current-username"></span>!</p>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Total Accounts</h3>
+                        <p id="total-accounts">-</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Transactions</h3>
+                        <p id="total-transactions">-</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Account Balance</h3>
+                        <p id="total-balance">-</p>
+                    </div>
+                </div>
+
+                <!-- Goals Section -->
+                <div class="card" style="margin-top: 2rem;">
+                    <div class="card-header">
+                        <h3>My Goals</h3>
+                        <button onclick="showAddGoal()" class="btn btn-primary btn-small">+ Add Goal</button>
+                    </div>
+                    <div id="goals-list" class="goals-container"></div>
+                </div>
+
+                <!-- Add Goal Form -->
+                <div id="add-goal-form" class="card form-card" style="display: none; margin-top: 1rem;">
+                    <h3>Create New Goal</h3>
+                    <form onsubmit="createGoal(event)">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Goal Name:</label>
+                                <input type="text" id="goal-name" placeholder="e.g., Monthly Grocery Budget" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Target Amount ($):</label>
+                                <input type="number" step="0.01" id="goal-target" placeholder="500.00" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Goal Type:</label>
+                                <select id="goal-type" required>
+                                    <option value="spending_limit">Spending Limit</option>
+                                    <option value="savings_target">Savings Target</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Period:</label>
+                                <select id="goal-period" required>
+                                    <option value="weekly">Weekly</option>
+                                    <option value="monthly" selected>Monthly</option>
+                                    <option value="yearly">Yearly</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Start Date:</label>
+                                <input type="date" id="goal-start-date" required>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Create Goal</button>
+                            <button type="button" onclick="hideAddGoal()" class="btn btn-secondary">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="action-buttons">
+                    <button onclick="showScreen('transactions')" class="btn btn-primary btn-large">View All Transactions</button>
+                    <button onclick="showAddTransaction()" class="btn btn-secondary btn-large">+ Add Transaction</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Transactions Screen -->
+        <div id="transactions-screen" class="app-section">
+            <div class="container">
+                <div class="screen-header">
+                    <h2>My Transactions</h2>
+                    <button onclick="showAddTransaction()" class="btn btn-primary">+ Add Transaction</button>
+                </div>
+
+                <!-- Add Transaction Form -->
+                <div id="add-transaction-form" class="card form-card" style="display: none;">
+                    <h3>Add New Transaction</h3>
+                    <form onsubmit="createTransaction(event)">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Account:</label>
+                                <select name="account_id" id="account-select" required></select>
+                            </div>
+                            <div class="form-group">
+                                <label>Category:</label>
+                                <select name="category_id" id="category-select" required></select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Type:</label>
+                                <select name="transaction_type" required>
+                                    <option value="expense">Expense</option>
+                                    <option value="income">Income</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Date:</label>
+                                <input type="date" name="transaction_date" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Amount:</label>
+                                <input type="number" step="0.01" name="amount" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Description:</label>
+                                <input type="text" name="description">
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Create Transaction</button>
+                            <button type="button" onclick="hideAddTransaction()" class="btn btn-secondary">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Transactions List -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3>All Transactions</h3>
+                        <button onclick="loadTransactions()" class="btn btn-secondary btn-small">Refresh</button>
+                    </div>
+                    <div id="transactions-list" class="data-list"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Screen -->
+        <div id="profile-screen" class="app-section">
+            <div class="container">
+                <h2>My Profile</h2>
+                
+                <div class="profile-card card">
+                    <div class="profile-header">
+                        <div class="profile-avatar">👤</div>
+                        <div>
+                            <h3 id="profile-username">Loading...</h3>
+                            <p id="profile-email">Loading...</p>
+                        </div>
+                    </div>
+                    
+                    <div class="profile-stats">
+                        <div class="stat-item">
+                            <strong id="profile-transactions">-</strong>
+                            <span>Transactions</span>
+                        </div>
+                        <div class="stat-item">
+                            <strong id="profile-accounts">-</strong>
+                            <span>Accounts</span>
+                        </div>
+                    </div>
+
+                    <button onclick="showEditProfile()" class="btn btn-primary">Edit Profile</button>
+                </div>
+
+                <!-- Monthly Summary -->
+                <div class="card">
+                    <h3>Monthly Summary</h3>
+                    <button onclick="loadProfileMonthlySummary()" class="btn btn-primary">View My Monthly Summary</button>
+                    <div id="profile-monthly-results" class="data-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="edit-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h3 id="modal-title"></h3>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
