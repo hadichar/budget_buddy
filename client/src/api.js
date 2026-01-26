@@ -7,8 +7,8 @@ async function fetchAPI(endpoint) {
     const data = await response.json();
     
     return { 
-      ok: response.ok,  
-      data: data       
+      ok: response.ok,
+      data: data
     };
   } catch (error) {
     return { 

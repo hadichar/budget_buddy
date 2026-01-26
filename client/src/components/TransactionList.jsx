@@ -2,12 +2,12 @@ import { useState, useEffect } from 'react';
 import { getTransactions } from '../api';
 
 function TransactionList({ userId }) {
-  const [transactions, setTransactions] = useState([]);  
-  const [loading, setLoading] = useState(true);           
+  const [transactions, setTransactions] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadTransactions();  
-  }, [userId]);          
+    loadTransactions();
+  }, [userId]);
 
   async function loadTransactions() {
     try {
@@ -15,13 +15,13 @@ function TransactionList({ userId }) {
       
       if (result.ok) {
         const userTransactions = result.data.filter(transaction => {
-          return transaction.user_id === userId;  
+          return transaction.user_id === userId;
         });
         
         userTransactions.sort((transactionA, transactionB) => {
-          const dateA = new Date(transactionA.transaction_date);  
-          const dateB = new Date(transactionB.transaction_date);  
-          return dateB - dateA;  
+          const dateA = new Date(transactionA.transaction_date);
+          const dateB = new Date(transactionB.transaction_date);
+          return dateB - dateA;
         });
         
         setTransactions(userTransactions);

@@ -629,18 +629,21 @@ function loadReactDashboard() {
         script.id = 'react-js';
         script.type = 'module';
         // Try the newest filename first, then fallback to others
-        script.src = '/assets/index-mlUPaw76.js';
+        script.src = '/assets/index-Cab3nn4r.js';
         script.onerror = function() {
             // Fallback to older filenames if new one doesn't exist
-            this.src = '/assets/index-CmifcRG_.js';
+            this.src = '/assets/index-mlUPaw76.js';
             this.onerror = function() {
-                this.src = '/assets/index-DWfj8lbj.js';
+                this.src = '/assets/index-CmifcRG_.js';
                 this.onerror = function() {
-                    this.src = '/assets/index-C-01Ut89.js';
+                    this.src = '/assets/index-DWfj8lbj.js';
                     this.onerror = function() {
-                        this.src = '/assets/index-DWHjUpE8.js';
+                        this.src = '/assets/index-C-01Ut89.js';
                         this.onerror = function() {
-                            this.src = '/assets/index-D4IOOOd1.js';
+                            this.src = '/assets/index-DWHjUpE8.js';
+                            this.onerror = function() {
+                                this.src = '/assets/index-D4IOOOd1.js';
+                            };
                         };
                     };
                 };

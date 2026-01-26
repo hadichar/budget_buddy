@@ -1,6 +1,3 @@
-// Enhanced Stats Component - Makes the dashboard stats more user-friendly
-// This component enhances the existing stats with React for better interactivity
-
 import { useState, useEffect } from 'react';
 import { getAccounts, getTransactions } from '../api';
 
@@ -21,12 +18,18 @@ function EnhancedStats({ userId }) {
       const transactionsResult = await getTransactions();
 
       if (accountsResult.ok) {
-        const userAccounts = accountsResult.data.filter(acc => acc.user_id === userId);
+        const userAccounts = accountsResult.data.filter(account => {
+          return account.user_id === userId;
+        });
+        
         setAccounts(userAccounts);
       }
 
       if (transactionsResult.ok) {
-        const userTransactions = transactionsResult.data.filter(t => t.user_id === userId);
+        const userTransactions = transactionsResult.data.filter(transaction => {
+          return transaction.user_id === userId;
+        });
+        
         setTransactions(userTransactions);
       }
     } catch (error) {
@@ -36,7 +39,10 @@ function EnhancedStats({ userId }) {
     }
   }
 
-  const totalBalance = accounts.reduce((sum, acc) => sum + parseFloat(acc.balance || 0), 0);
+  const totalBalance = accounts.reduce((sum, account) => {
+    const accountBalance = parseFloat(account.balance || 0);
+    return sum + accountBalance;
+  }, 0);
 
   if (loading) {
     return (
@@ -65,10 +71,13 @@ function EnhancedStats({ userId }) {
           transition: 'transform 0.2s',
           cursor: 'pointer'
         }}
-        onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
-        onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.transform = 'scale(1.05)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform = 'scale(1)';
+        }}
         onClick={() => {
-          // Navigate to accounts page
           if (window.showScreen) {
             window.showScreen('accounts');
           }
@@ -98,7 +107,6 @@ function EnhancedStats({ userId }) {
         onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
         onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
         onClick={() => {
-          // Navigate to transactions page
           if (window.showScreen) {
             window.showScreen('transactions');
           }
@@ -127,8 +135,7 @@ function EnhancedStats({ userId }) {
         }}
         onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
         onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-        onClick={() => {
-          // Navigate to profile page (where account balance info is shown)
+        onClick={() => { 
           if (window.showScreen) {
             window.showScreen('profile');
           }
