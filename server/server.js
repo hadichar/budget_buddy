@@ -13,6 +13,17 @@ const app = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Enable CORS for mobile app
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+  next();
+});
+
 // Connect to MySQL database
 const db = mysql.createPool({
   host: process.env.DB_HOST || 'localhost',
@@ -44,6 +55,37 @@ app.get('/api/test-connection', async (req, res) => {
 
 // USERS 
 
+// Login endpoint
+app.post('/api/login', async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    
+    if (!username || !password) {
+      return res.status(400).json({ error: 'Username and password are required' });
+    }
+    
+    const [rows] = await db.execute(
+      'SELECT user_id, username, email, password, created_date FROM users WHERE username = ?',
+      [username]
+    );
+    
+    if (rows.length === 0) {
+      return res.status(401).json({ error: 'Invalid username or password' });
+    }
+    
+    const user = rows[0];
+    
+    if (user.password !== password) {
+      return res.status(401).json({ error: 'Invalid username or password' });
+    }
+    
+    // Return user without password
+    const { password: _, ...userWithoutPassword } = user;
+    res.json(userWithoutPassword);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
 // Get all users
 app.get('/api/users', async (req, res) => {
